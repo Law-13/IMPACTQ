@@ -4,6 +4,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Sidebar } from "./Sidebar";
 import { Navbar } from "./Navbar";
+import { LoadingScreen } from "./LoadingScreen";
 
 interface LayoutShellProps {
   children: React.ReactNode;
@@ -19,6 +20,7 @@ export function LayoutShell({ children }: LayoutShellProps) {
   if (isPublicPage) {
     return (
       <div className="flex flex-col min-h-screen bg-surface">
+        <LoadingScreen />
         <Navbar isPublic={true} />
         <main className="flex-1 animate-in fade-in duration-300">
           {children}
@@ -29,6 +31,7 @@ export function LayoutShell({ children }: LayoutShellProps) {
 
   return (
     <div className="flex min-h-screen bg-background text-text">
+      <LoadingScreen />
       {/* Sidebar navigation */}
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
@@ -45,4 +48,5 @@ export function LayoutShell({ children }: LayoutShellProps) {
     </div>
   );
 }
+
 
