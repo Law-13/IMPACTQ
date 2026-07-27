@@ -25,7 +25,7 @@ export function Navbar({ onMenuClick, isPublic = false }: NavbarProps) {
 
   if (isPublic) {
     return (
-      <header className="sticky top-0 z-40 w-full bg-surface/85 backdrop-blur-xs border-b border-border transition-colors">
+      <header className="sticky top-0 z-40 w-full bg-surface/60 backdrop-blur-xl border-b border-border/50 shadow-sm shadow-black/[0.02] transition-colors">
         <div className="max-w-5xl mx-auto h-16 px-6 flex items-center justify-between">
           <Link href="/" className="focus-visible:outline-none">
             <Logo />
@@ -53,7 +53,7 @@ export function Navbar({ onMenuClick, isPublic = false }: NavbarProps) {
   }
 
   return (
-    <header className="sticky top-0 z-30 w-full h-16 bg-surface border-b border-border flex items-center justify-between px-6 transition-colors">
+    <header className="sticky top-0 z-30 w-full h-16 bg-surface/60 backdrop-blur-xl border-b border-border/50 shadow-sm shadow-black/[0.02] flex items-center justify-between px-6 transition-colors">
       {/* Left side: Mobile Toggle & Breadcrumb */}
       <div className="flex items-center gap-4">
         {onMenuClick && (

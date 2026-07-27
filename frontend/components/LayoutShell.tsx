@@ -19,7 +19,7 @@ export function LayoutShell({ children }: LayoutShellProps) {
 
   if (isPublicPage) {
     return (
-      <div className="flex flex-col min-h-screen bg-surface">
+      <div className="flex flex-col min-h-screen bg-surface ambient-bg">
         <LoadingScreen />
         <Navbar isPublic={true} />
         <main className="flex-1 animate-in fade-in duration-300">
@@ -30,7 +30,7 @@ export function LayoutShell({ children }: LayoutShellProps) {
   }
 
   return (
-    <div className="flex min-h-screen bg-background text-text">
+    <div className="flex min-h-screen bg-background text-text ambient-bg">
       <LoadingScreen />
       {/* Sidebar navigation */}
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />

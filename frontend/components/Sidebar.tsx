@@ -9,7 +9,6 @@ import {
   Settings as SettingsIcon,
   X
 } from "lucide-react";
-import { Logo } from "./Logo";
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
@@ -32,29 +31,38 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Mobile Backdrop Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/30 backdrop-blur-xs z-40 lg:hidden transition-opacity duration-300"
+          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
           onClick={onClose}
           aria-hidden="true"
         />
       )}
 
-      {/* Sidebar Container */}
+      {/* Sidebar Container — Blue Gradient + Glassmorphism */}
       <aside
         className={cn(
-          "fixed top-0 bottom-0 left-0 z-50 flex flex-col w-64 bg-surface border-r border-border transform lg:translate-x-0 transition-transform duration-300 ease-in-out lg:sticky lg:h-screen",
+          "fixed top-0 bottom-0 left-0 z-50 flex flex-col w-64 transform lg:translate-x-0 transition-transform duration-300 ease-in-out lg:sticky lg:h-screen",
+          "bg-gradient-to-b from-[#1e3a8a] via-[#1d4ed8] to-[#2563eb]",
+          "backdrop-blur-xl border-r border-white/10 shadow-xl shadow-blue-900/20",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
         role="navigation"
         aria-label="Main Navigation"
       >
         {/* Header / Logo */}
-        <div className="h-16 flex items-center justify-between px-6 border-b border-border">
+        <div className="h-16 flex items-center justify-between px-6 border-b border-white/10">
           <Link href="/dashboard" onClick={onClose} className="focus-visible:outline-none">
-            <Logo />
+            <div className="flex items-center gap-2.5 select-none">
+              <div className="w-7 h-7 rounded-md bg-white/15 backdrop-blur-sm flex items-center justify-center">
+                <span className="font-bold text-white text-sm">Q</span>
+              </div>
+              <span className="font-sans font-bold text-lg text-white tracking-tight">
+                ImpactQ
+              </span>
+            </div>
           </Link>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-md text-secondary hover:text-text hover:bg-background lg:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="p-1.5 rounded-md text-blue-200 hover:text-white hover:bg-white/10 lg:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
             aria-label="Close menu"
           >
             <X size={18} />
@@ -73,22 +81,22 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 href={item.href}
                 onClick={onClose}
                 className={cn(
-                  "relative flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                  "relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30",
                   isActive 
-                    ? "text-accent bg-accent/[0.04] dark:bg-accent/[0.08]" 
-                    : "text-secondary hover:text-text hover:bg-background"
+                    ? "text-white bg-white/15 backdrop-blur-sm shadow-sm shadow-black/10" 
+                    : "text-blue-100/70 hover:text-white hover:bg-white/10"
                 )}
                 aria-current={isActive ? "page" : undefined}
               >
                 {/* Active Indicator Line */}
                 {isActive && (
-                  <div className="absolute left-0 top-2 bottom-2 w-[3px] bg-accent rounded-r-md transition-all duration-300" />
+                  <div className="absolute left-0 top-2 bottom-2 w-[3px] bg-white rounded-r-md transition-all duration-300" />
                 )}
                 <Icon 
                   size={18} 
                   className={cn(
                     "transition-colors",
-                    isActive ? "text-accent" : "text-secondary group-hover:text-text"
+                    isActive ? "text-white" : "text-blue-200/60 group-hover:text-white"
                   )} 
                 />
                 <span>{item.name}</span>
@@ -98,8 +106,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </nav>
 
         {/* Footer / Version info */}
-        <div className="p-4 border-t border-border bg-background/20 text-center">
-          <span className="text-[10px] tracking-wider text-secondary font-mono">
+        <div className="p-4 border-t border-white/10 bg-black/10 text-center backdrop-blur-sm">
+          <span className="text-[10px] tracking-wider text-blue-200/50 font-mono">
             IMPACTQ V1.0.0
           </span>
         </div>
@@ -107,3 +115,4 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     </>
   );
 }
+
