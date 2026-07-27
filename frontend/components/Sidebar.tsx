@@ -41,7 +41,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       <aside
         className={cn(
           "fixed top-0 bottom-0 left-0 z-50 flex flex-col w-64 transform lg:translate-x-0 transition-transform duration-300 ease-in-out lg:sticky lg:h-screen",
-          "bg-gradient-to-b from-[#1e3a8a] via-[#1d4ed8] to-[#2563eb]",
+          "bg-[#00072d]",
           "backdrop-blur-xl border-r border-white/10 shadow-xl shadow-blue-900/20",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
