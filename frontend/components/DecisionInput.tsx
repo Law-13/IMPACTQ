@@ -44,7 +44,7 @@ export function DecisionInput({ onSubmit, loading }: DecisionInputProps) {
               placeholder="e.g. Expand software sales into the European market by establishing local AWS hosting clusters and hiring a regional manager..."
               value={decision}
               onChange={(e) => setDecision(e.target.value)}
-              className="w-full rounded-lg border border-border bg-background p-4 text-sm text-text placeholder:text-secondary focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/15 transition-all resize-none leading-relaxed"
+              className="w-full rounded-lg border border-border bg-background p-4 text-base sm:text-sm text-text placeholder:text-secondary focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/15 transition-all resize-none leading-relaxed"
               disabled={loading}
               required
             />
@@ -63,7 +63,7 @@ export function DecisionInput({ onSubmit, loading }: DecisionInputProps) {
                   type="button"
                   onClick={() => setDecision(preset.value)}
                   disabled={loading}
-                  className="text-xs px-3 py-1.5 rounded-md border border-border bg-background hover:bg-surface hover:border-secondary text-text font-medium transition-all select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="text-xs px-3.5 py-2 sm:py-1.5 rounded-md border border-border bg-background hover:bg-surface hover:border-secondary text-text font-medium transition-all select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
                 >
                   {preset.label}
                 </button>
@@ -72,7 +72,7 @@ export function DecisionInput({ onSubmit, loading }: DecisionInputProps) {
           </div>
 
           {/* Action button */}
-          <div className="flex justify-end pt-2 border-t border-border/60">
+          <div className="flex flex-col sm:flex-row justify-end pt-2 border-t border-border/60">
             <AnalyzeButton 
               disabled={loading || !decision.trim()} 
               loading={loading}

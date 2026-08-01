@@ -10,7 +10,9 @@ export function LoadingScreen() {
 
   useEffect(() => {
     // Prevent scrolling while loading is active
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
 
     const duration = 1200; // 1.2s loading duration
     const intervalTime = 15; // 15ms update interval
@@ -27,7 +29,9 @@ export function LoadingScreen() {
             // Wait for fadeout animation (500ms) to unmount
             setTimeout(() => {
               setVisible(false);
-              document.body.style.overflow = "";
+              document.body.style.overflow = '';
+              document.body.style.position = '';
+              document.body.style.touchAction = '';
             }, 500);
           }, 150);
           return 100;
@@ -46,7 +50,7 @@ export function LoadingScreen() {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-background select-none transition-all duration-500 ease-out-expo ${
+      className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background select-none transition-all duration-500 ease-out-expo ${
         fadeOut ? "opacity-0 scale-98 pointer-events-none" : "opacity-100 scale-100"
       }`}
       style={{

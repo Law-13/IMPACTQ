@@ -13,7 +13,7 @@ export function AnalyzeButton({ onClick, disabled, loading }: AnalyzeButtonProps
       variant="primary" 
       disabled={disabled} 
       onClick={onClick}
-      className="gap-2 select-none"
+      className="gap-2 select-none w-full sm:w-auto active:scale-95 transition-transform"
     >
       {loading ? (
         <span className="flex items-center gap-2">
