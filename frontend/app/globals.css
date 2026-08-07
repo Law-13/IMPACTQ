@@ -156,3 +156,48 @@ body {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+/* Animation Keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInFromBottom {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes zoomIn95 {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out both;
+}
+
+.animate-in {
+  animation-duration: 0.3s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+.animate-in.fade-in {
+  animation-name: fadeIn;
+}
+
+.animate-in.slide-in-from-bottom-3 {
+  animation-name: slideInFromBottom;
+}
+
+.animate-in.zoom-in-95 {
+  animation-name: zoomIn95;
+}
+
+.animate-in.duration-300 {
+  animation-duration: 0.3s;
+}
+
+.animate-in.duration-500 {
+  animation-duration: 0.5s;
+}

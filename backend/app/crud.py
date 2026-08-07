@@ -2,7 +2,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from . import models, schemas
-from datetime import datetime
 
 def get_decisions(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Decision).order_by(models.Decision.created_at.desc()).offset(skip).limit(limit).all()
@@ -25,8 +24,8 @@ def create_decision(db: Session, title: str, description: str, data: dict):
         db_constraint = models.ConstraintModel(
             decision_id=db_decision.id,
             text=c["text"],
-            type=c["type"],
-            status=c["status"]
+            type=c["type"].lower(),
+            status=c["status"].lower()
         )
         db.add(db_constraint)
 
@@ -35,8 +34,8 @@ def create_decision(db: Session, title: str, description: str, data: dict):
         db_impact = models.ImpactModel(
             decision_id=db_decision.id,
             text=imp["text"],
-            type=imp["type"],
-            intensity=imp["intensity"]
+            type=imp["type"].lower(),
+            intensity=imp["intensity"].lower()
         )
         db.add(db_impact)
 

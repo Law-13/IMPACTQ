@@ -125,7 +125,7 @@ def generate_decision_data(title: str, description: str) -> Dict[str, Any]:
     """
     
     # Call Gemini model
-    model = genai.GenerativeModel("gemini-3.5-flash")
+    model = genai.GenerativeModel("gemini-2.0-flash")
     response = model.generate_content(
         prompt,
         generation_config=genai.GenerationConfig(

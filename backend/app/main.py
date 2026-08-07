@@ -55,11 +55,14 @@ def get_decision(decision_id: str, db: Session = Depends(get_db)):
 
 @app.post("/api/decisions", response_model=schemas.DecisionScenario)
 def create_decision(decision_input: schemas.DecisionInput, db: Session = Depends(get_db)):
-    # Generate structured data using our parser engine
-    generated_data = generator.generate_decision_data(
-        title=decision_input.title,
-        description=decision_input.description
-    )
+    try:
+        # Generate structured data using our parser engine
+        generated_data = generator.generate_decision_data(
+            title=decision_input.title,
+            description=decision_input.description
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"AI analysis failed: {str(e)}")
     
     # Save it to SQLite database
     db_decision = crud.create_decision(

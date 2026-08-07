@@ -42,7 +42,10 @@ export function LoadingScreen() {
 
     return () => {
       clearInterval(timer);
-      document.body.style.overflow = "";
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.touchAction = '';
     };
   }, []);
 
