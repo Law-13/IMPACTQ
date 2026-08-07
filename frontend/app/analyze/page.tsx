@@ -31,6 +31,7 @@ export default function AnalyzePage() {
   });
 
   const handleAnalyze = (decisionText: string) => {
+    mutation.reset(); // Clear any previous error state
     mutation.mutate(decisionText);
   };
 
@@ -38,6 +39,8 @@ export default function AnalyzePage() {
     ? "loading" 
     : mutation.isSuccess 
     ? "success" 
+    : mutation.isError
+    ? "error"
     : "idle";
     
   const activeScenario = mutation.data || null;
@@ -54,6 +57,22 @@ export default function AnalyzePage() {
 
       {/* Decision Input Controls */}
       <DecisionInput onSubmit={handleAnalyze} loading={status === "loading"} />
+
+      {/* Error Display */}
+      {status === "error" && (
+        <div className="p-4 rounded-lg border border-danger/30 bg-danger/5 space-y-2 animate-fade-in">
+          <p className="text-sm font-semibold text-danger">Analysis Failed</p>
+          <p className="text-xs text-danger/80">
+            {mutation.error?.message || "An unexpected error occurred. Please check that the backend server is running and try again."}
+          </p>
+          <button
+            onClick={() => mutation.reset()}
+            className="text-xs text-accent hover:underline font-medium mt-1"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Execution Results */}
       {status === "idle" && <EmptyState />}
@@ -114,3 +133,4 @@ export default function AnalyzePage() {
     </div>
   );
 }
+
