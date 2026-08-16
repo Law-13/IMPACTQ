@@ -113,8 +113,14 @@ def calculate_area_score(title: str, area_name: str, trend: str) -> float:
     return max(0.0, min(100.0, round(base_score + variance, 1)))
 
 def generate_decision_data(title: str, description: str) -> Dict[str, Any]:
-    if not api_key:
+    # Reload environment dynamically to pick up any manual key changes
+    load_dotenv()
+    current_key = os.getenv("GEMINI_API_KEY")
+    if not current_key:
         raise ValueError("GEMINI_API_KEY environment variable is not set.")
+        
+    # Configure API key dynamically
+    genai.configure(api_key=current_key)
         
     prompt = f"""
     Analyze the following business decision:
@@ -124,15 +130,26 @@ def generate_decision_data(title: str, description: str) -> Dict[str, Any]:
     Perform a complete decision intelligence evaluation mapping hidden constraints, business impacts, affected areas, and strategic recommendations.
     """
     
-    # Call Gemini model
-    model = genai.GenerativeModel("gemini-2.0-flash")
-    response = model.generate_content(
-        prompt,
-        generation_config=genai.GenerationConfig(
-            response_mime_type="application/json",
-            response_schema=GeminiDecisionOutput
-        )
-    )
+    # Try gemini-2.5-flash first, fallback to gemini-2.0-flash
+    response = None
+    last_error = None
+    for model_name in ["gemini-2.5-flash", "gemini-2.0-flash"]:
+        try:
+            model = genai.GenerativeModel(model_name)
+            response = model.generate_content(
+                prompt,
+                generation_config=genai.GenerationConfig(
+                    response_mime_type="application/json",
+                    response_schema=GeminiDecisionOutput
+                )
+            )
+            break
+        except Exception as e:
+            last_error = e
+            continue
+            
+    if response is None:
+        raise ValueError(f"Gemini API generation failed. Last error: {str(last_error)}")
     
     # Parse structured response
     raw_data = json.loads(response.text)
