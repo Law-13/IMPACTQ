@@ -32,16 +32,20 @@ export default function DashboardPage() {
     setMounted(true);
   }, []);
 
-  const { data: stats } = useQuery({
+  const { data: stats, isError: isStatsError } = useQuery({
     queryKey: ["stats"],
     queryFn: api.fetchStats,
     refetchInterval: 5000, // Poll every 5s for dashboard updates
+    retry: 2,
   });
 
-  const { data: decisions, isLoading: isDecisionsLoading } = useQuery({
+  const { data: decisions, isLoading: isDecisionsLoading, isError: isDecisionsError } = useQuery({
     queryKey: ["decisions"],
     queryFn: api.fetchDecisions,
+    retry: 2,
   });
+
+  const hasApiError = isStatsError || isDecisionsError;
 
   const recentDecisions = useMemo(() => decisions || [], [decisions]);
 
@@ -98,6 +102,16 @@ export default function DashboardPage() {
           Here is a summary of today&apos;s decision intelligence activity. You have completed {totalAnalyses} deterministic analyses.
         </p>
       </div>
+
+      {/* Backend Connection Error */}
+      {hasApiError && (
+        <div className="p-4 rounded-lg border border-danger/30 bg-danger/5 space-y-1 animate-fade-in">
+          <p className="text-sm font-semibold text-danger">Unable to connect to backend</p>
+          <p className="text-xs text-danger/80">
+            Make sure the FastAPI backend is running on port 8000. Run <code className="bg-danger/10 px-1.5 py-0.5 rounded text-[11px] font-mono">start_impactq.bat</code> or start the backend manually.
+          </p>
+        </div>
+      )}
 
       {/* Quick Start Buttons */}
       <Card className="bg-surface shadow-[0_1px_3px_rgba(0,0,0,0.01)] border-border">
