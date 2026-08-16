@@ -35,7 +35,7 @@ export default function DashboardPage() {
   const { data: stats, isError: isStatsError } = useQuery({
     queryKey: ["stats"],
     queryFn: api.fetchStats,
-    refetchInterval: 5000, // Poll every 5s for dashboard updates
+    refetchInterval: 30000, // Poll every 30s for dashboard updates
     retry: 2,
   });
 
