@@ -1,8 +1,11 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import os
+import time
+from collections import defaultdict
 
 from .database import engine, get_db
 from . import models, schemas, crud, generator
@@ -29,6 +32,39 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# In-Memory Sliding-Window Rate Limiter
+class InMemoryRateLimiter:
+    def __init__(self, requests_limit: int = 60, window_seconds: int = 60):
+        self.requests_limit = requests_limit
+        self.window_seconds = window_seconds
+        self.history = defaultdict(list)
+
+    def check_rate_limit(self, ip: str) -> bool:
+        current_time = time.time()
+        # Filter out timestamps outside the current sliding window
+        self.history[ip] = [t for t in self.history[ip] if current_time - t < self.window_seconds]
+        
+        if len(self.history[ip]) >= self.requests_limit:
+            return False
+        
+        self.history[ip].append(current_time)
+        return True
+
+rate_limiter = InMemoryRateLimiter(requests_limit=60, window_seconds=60)
+
+@app.middleware("http")
+async def rate_limit_middleware(request: Request, call_next):
+    # Only rate limit backend API paths
+    if request.url.path.startswith("/api"):
+        client_ip = request.client.host if request.client else "unknown"
+        if not rate_limiter.check_rate_limit(client_ip):
+            return JSONResponse(
+                status_code=429,
+                content={"detail": "Too many requests. Please try again later."}
+            )
+    response = await call_next(request)
+    return response
 
 @app.get("/")
 def read_root():
