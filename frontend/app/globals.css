@@ -109,24 +109,11 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
-/* Ambient animated gradient background for the main app shell */
-@keyframes ambientShift {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
 .ambient-bg {
   background: 
-    radial-gradient(ellipse at 20% 50%, rgba(37, 99, 235, 0.03) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(37, 99, 235, 0.02) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, rgba(147, 51, 234, 0.015) 0%, transparent 50%),
+    radial-gradient(ellipse at top left, rgba(37, 99, 235, 0.02) 0%, transparent 45%),
+    radial-gradient(ellipse at bottom right, rgba(147, 51, 234, 0.01) 0%, transparent 45%),
     var(--background);
-  background-size: 200% 200%;
-  animation: ambientShift 20s ease infinite;
 }
 
 /* Premium Loading Animations & Transitions */
