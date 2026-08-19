@@ -1,6 +1,8 @@
 # backend/app/generator.py
 import os
 import json
+import urllib.request
+import urllib.error
 from typing import Dict, Any, List
 from pydantic import BaseModel, Field
 import google.generativeai as genai
@@ -112,6 +114,91 @@ def calculate_area_score(title: str, area_name: str, trend: str) -> float:
     variance = (len(title) + len(area_name)) % 6 - 3 # yields -3 to +2
     return max(0.0, min(100.0, round(base_score + variance, 1)))
 
+def _generate_via_groq(title: str, description: str, api_key: str) -> Dict[str, Any]:
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    
+    system_prompt = """You are a Decision Intelligence AI. You must evaluate the given business decision and output a JSON object adhering exactly to this structure:
+{
+  "constraints": [
+    {
+      "text": "The constraint text",
+      "type": "hard" or "soft",
+      "status": "satisfied" or "violated" or "warning"
+    }
+  ],
+  "positiveImpacts": [
+    {
+      "text": "Description of positive impact",
+      "type": "positive",
+      "intensity": "high" or "medium" or "low"
+    }
+  ],
+  "negativeImpacts": [
+    {
+      "text": "Description of negative impact",
+      "type": "negative",
+      "intensity": "high" or "medium" or "low"
+    }
+  ],
+  "affectedAreas": [
+    {
+      "name": "Department name (e.g. Finance, Customer Success, Product & Engineering, Sales & Marketing, Legal)",
+      "weight": 20.0,
+      "trend": "up" or "down" or "stable"
+    }
+  ],
+  "decisionCompass": {
+    "recommendation": "Brief recommended decision action (max 6 words)",
+    "whyThisMatters": "Detailed explanation of why this matters",
+    "potentialRisks": "Summary of core implementation risks",
+    "suggestedAction": "Concrete immediate next steps",
+    "confidence": 85.0
+  }
+}
+Return ONLY the raw JSON object. Do not include markdown code block syntax (like ```json), conversation, or extra text."""
+
+    user_prompt = f"Analyze the following decision:\nTitle: {title}\nDescription: {description}"
+    
+    # Try different models on Groq in case of availability issues
+    last_error = None
+    for model_name in ["llama-3.3-70b-specdec", "llama3-70b-8192", "mixtral-8x7b-32768", "gemma2-9b-it"]:
+        payload = {
+            "model": model_name,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
+            "response_format": {"type": "json_object"},
+            "temperature": 0.2
+        }
+        
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            },
+            method="POST"
+        )
+        
+        try:
+            with urllib.request.urlopen(req, timeout=15) as response:
+                res_body = response.read().decode("utf-8")
+                res_data = json.loads(res_body)
+                content = res_data["choices"][0]["message"]["content"].strip()
+                if content.startswith("```"):
+                    content = content.split("\n", 1)[1]
+                    if content.endswith("```"):
+                        content = content.rsplit("```", 1)[0]
+                    content = content.strip()
+                return json.loads(content)
+        except Exception as e:
+            last_error = e
+            continue
+            
+    raise ValueError(f"Groq API generation failed. Last error: {str(last_error)}")
+
 def generate_decision_data(title: str, description: str) -> Dict[str, Any]:
     # Reload environment dynamically to pick up any manual key changes
     load_dotenv()
@@ -119,40 +206,46 @@ def generate_decision_data(title: str, description: str) -> Dict[str, Any]:
     if not current_key:
         raise ValueError("GEMINI_API_KEY environment variable is not set.")
         
-    # Configure API key dynamically
-    genai.configure(api_key=current_key)
-        
-    prompt = f"""
-    Analyze the following business decision:
-    Title: {title}
-    Description: {description}
+    raw_data = None
     
-    Perform a complete decision intelligence evaluation mapping hidden constraints, business impacts, affected areas, and strategic recommendations.
-    """
-    
-    # Try gemini-2.5-flash first, fallback to gemini-2.0-flash
-    response = None
-    last_error = None
-    for model_name in ["gemini-2.5-flash", "gemini-2.0-flash"]:
-        try:
-            model = genai.GenerativeModel(model_name)
-            response = model.generate_content(
-                prompt,
-                generation_config=genai.GenerationConfig(
-                    response_mime_type="application/json",
-                    response_schema=GeminiDecisionOutput
-                )
-            )
-            break
-        except Exception as e:
-            last_error = e
-            continue
+    if current_key.startswith("gsk_"):
+        # Use Groq API provider
+        raw_data = _generate_via_groq(title, description, current_key)
+    else:
+        # Use Gemini API provider
+        genai.configure(api_key=current_key)
             
-    if response is None:
-        raise ValueError(f"Gemini API generation failed. Last error: {str(last_error)}")
-    
-    # Parse structured response
-    raw_data = json.loads(response.text)
+        prompt = f"""
+        Analyze the following business decision:
+        Title: {title}
+        Description: {description}
+        
+        Perform a complete decision intelligence evaluation mapping hidden constraints, business impacts, affected areas, and strategic recommendations.
+        """
+        
+        # Try active Gemini 3.x series models
+        response = None
+        last_error = None
+        for model_name in ["gemini-3.7-flash", "gemini-3.5-flash", "gemini-3.6-flash"]:
+            try:
+                model = genai.GenerativeModel(model_name)
+                response = model.generate_content(
+                    prompt,
+                    generation_config=genai.GenerationConfig(
+                        response_mime_type="application/json",
+                        response_schema=GeminiDecisionOutput
+                    )
+                )
+                break
+            except Exception as e:
+                last_error = e
+                continue
+                
+        if response is None:
+            raise ValueError(f"Gemini API generation failed. Last error: {str(last_error)}")
+        
+        # Parse structured response
+        raw_data = json.loads(response.text)
     
     # Extract lists
     constraints = raw_data.get("constraints", [])
