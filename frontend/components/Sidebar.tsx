@@ -9,6 +9,7 @@ import {
   Settings as SettingsIcon,
   X
 } from "lucide-react";
+import { Logo } from "./Logo";
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
@@ -52,9 +53,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="h-16 flex items-center justify-between px-6 border-b border-white/10">
           <Link href="/dashboard" onClick={onClose} className="focus-visible:outline-none">
             <div className="flex items-center gap-2.5 select-none">
-              <div className="w-7 h-7 rounded-md bg-white/15 backdrop-blur-sm flex items-center justify-center">
-                <span className="font-bold text-white text-sm">Q</span>
-              </div>
+              <Logo showText={false} width={28} height={28} />
               <span className="font-sans font-bold text-lg text-white tracking-tight">
                 ImpactQ
               </span>
