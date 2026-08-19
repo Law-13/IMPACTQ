@@ -8,7 +8,10 @@ export function LoadingScreen() {
   const [visible, setVisible] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
 
+  const [isDark, setIsDark] = useState(false);
+
   useEffect(() => {
+    setIsDark(document.documentElement.classList.contains("dark"));
     // Prevent scrolling while loading is active
     document.body.style.overflow = 'hidden';
     document.body.style.position = 'fixed';
@@ -65,10 +68,10 @@ export function LoadingScreen() {
         {/* Pulsing Logo */}
         <div className="relative w-14 h-14 animate-pulse-gentle">
           <Image
-            src="/logo.png"
+            src={isDark ? "/impactq_dark.jpg" : "/impactq_light.jpg"}
             alt="ImpactQ Logo"
             fill
-            className="object-contain dark:invert"
+            className="object-contain rounded-md"
             priority
           />
         </div>

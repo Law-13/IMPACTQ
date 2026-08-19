@@ -53,7 +53,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="h-16 flex items-center justify-between px-6 border-b border-white/10">
           <Link href="/dashboard" onClick={onClose} className="focus-visible:outline-none">
             <div className="flex items-center gap-2.5 select-none">
-              <Logo showText={false} width={28} height={28} />
+              <Logo showText={false} width={28} height={28} forceDark={true} />
               <span className="font-sans font-bold text-lg text-white tracking-tight">
                 ImpactQ
               </span>
